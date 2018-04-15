@@ -20,7 +20,7 @@ crc16table = (  0x0000,0xC0C1,0xC181,0x0140,0xC301,0x03C0,0x0280,0xC241,0xC601,0
 				0x4400,0x84C1,0x8581,0x4540,0x8701,0x47C0,0x4680,0x8641,0x8201,0x42C0,0x4380,0x8341,0x4100,0x81C1,0x8081,0x4040 )
 
 def calcAnsiCRC16( data ):
-'''CRC-16	0x8005	x16 + x15 + x2 + 1'''
+	'''CRC-16	0x8005	x16 + x15 + x2 + 1'''
 	datatmp=data
 	datalung=len(data)
 	crc=0
@@ -29,9 +29,9 @@ def calcAnsiCRC16( data ):
 		tmp= crc ^ datatmp
 		crc = (crc >> 8) ^ crc16table[ tmp & 0xff ]
 	return hex(crc)
-	
+
 def ccitt_crc16( initValue, data):
-'''CRC-CCITT	0x1021	x16 + x12 + x5 + 1'''
+	'''CRC-CCITT	0x1021	x16 + x12 + x5 + 1'''
 	datalung=len(data)
 	tmpCrc = initValue
 	for i in range (0,datalung):
@@ -43,7 +43,7 @@ def ccitt_crc16( initValue, data):
 				tmpCrc = tmpCrc << 1;
 			tmpCrc = tmpCrc & 0xFFFF;
 	return hex(tmpCrc);
-	
+
 def checkAnsiCRC16(msg,crc):
 	lun=len(msg)
 	tmpCRC = calcAnsiCRC16( msg )
@@ -51,7 +51,7 @@ def checkAnsiCRC16(msg,crc):
 		return True
 	else:
 		return False
-		
+
 def checkccitt_crc16(msg,crc):
 	lun=len(msg)
 	tmpCRC = ccitt_crc16( 0, msg )
