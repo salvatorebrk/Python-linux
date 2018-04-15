@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #- Author: Salvatore Bruccoleri
-#- CRC 16 - BASED ON IBM POLY=0X8005 - Translate by me for Python (tested in 2.7 version)
+#- CRC 16 - Translate by me for Python (tested in 2.7 version)
 #- You can import as CRC16 on your projects
 crc16table = (  0x0000,0xC0C1,0xC181,0x0140,0xC301,0x03C0,0x0280,0xC241,0xC601,0x06C0,0x0780,0xC741,0x0500,0xC5C1,0xC481,0x0440,
 				0xCC01,0x0CC0,0x0D80,0xCD41,0x0F00,0xCFC1,0xCE81,0x0E40,0x0A00,0xCAC1,0xCB81,0x0B40,0xC901,0x09C0,0x0880,0xC841,
@@ -19,20 +19,43 @@ crc16table = (  0x0000,0xC0C1,0xC181,0x0140,0xC301,0x03C0,0x0280,0xC241,0xC601,0
 				0x8801,0x48C0,0x4980,0x8941,0x4B00,0x8BC1,0x8A81,0x4A40,0x4E00,0x8EC1,0x8F81,0x4F40,0x8D01,0x4DC0,0x4C80,0x8C41,
 				0x4400,0x84C1,0x8581,0x4540,0x8701,0x47C0,0x4680,0x8641,0x8201,0x42C0,0x4380,0x8341,0x4100,0x81C1,0x8081,0x4040 )
 
-#Return CRC16 example: 0xAFAF.
-def calcAnsiCRC16( data, datalung ):
+def calcAnsiCRC16( data ):
+'''CRC-16	0x8005	x16 + x15 + x2 + 1'''
 	datatmp=data
+	datalung=len(data)
 	crc=0
 	for q in range (0,datalung):
 		datatmp = 0x00ff & ord(data[q])
 		tmp= crc ^ datatmp
 		crc = (crc >> 8) ^ crc16table[ tmp & 0xff ]
 	return hex(crc)
-
-#Return True of False if crc is right or not!
-#note: msg and crc was be parsed before to enter in this function.
-def checkAnsiCRC16(msg,lun,crc):
-	tmpCRC = calcAnsiCRC16( msg, lun )
+	
+def ccitt_crc16( initValue, data):
+'''CRC-CCITT	0x1021	x16 + x12 + x5 + 1'''
+	datalung=len(data)
+	tmpCrc = initValue
+	for i in range (0,datalung):
+		tmpCrc = tmpCrc ^  (int(data[i]) << 8);
+		
+		for j in range (0,8):
+			if ((tmpCrc & 0x8000) != 0):
+				tmpCrc = (tmpCrc << 1) ^ 0x1021;
+			else:
+				tmpCrc = tmpCrc << 1;
+		tmpCrc = tmpCrc & 0xFFFF;
+	return hex(tmpCrc);
+	
+def checkAnsiCRC16(msg,crc):
+	lun=len(msg)
+	tmpCRC = calcAnsiCRC16( msg )
+	if tmpCRC == crc :
+		return True
+	else:
+		return False
+		
+def checkccitt_crc16(msg,crc):
+	lun=len(msg)
+	tmpCRC = ccitt_crc16( 0, msg )
 	if tmpCRC == crc :
 		return True
 	else:
