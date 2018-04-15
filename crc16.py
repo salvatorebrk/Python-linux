@@ -36,13 +36,12 @@ def ccitt_crc16( initValue, data):
 	tmpCrc = initValue
 	for i in range (0,datalung):
 		tmpCrc = tmpCrc ^  (int(data[i]) << 8);
-		
 		for j in range (0,8):
 			if ((tmpCrc & 0x8000) != 0):
 				tmpCrc = (tmpCrc << 1) ^ 0x1021;
 			else:
 				tmpCrc = tmpCrc << 1;
-		tmpCrc = tmpCrc & 0xFFFF;
+			tmpCrc = tmpCrc & 0xFFFF;
 	return hex(tmpCrc);
 	
 def checkAnsiCRC16(msg,crc):
